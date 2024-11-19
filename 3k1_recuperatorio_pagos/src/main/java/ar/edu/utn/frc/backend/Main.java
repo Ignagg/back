@@ -55,6 +55,25 @@ public class Main {
 
         // PUNTO 16
         pagoService.listarMetodoDePagoMasUtilizadoPorCliente();
+
+        // PUNTO 17
+        pagoService.listarFacturasEmitidas();
+
+        // PUNTO 18
+        pagoService.listarPagosUltimos7Dias();
+
+        // PUNTO 19
+        pagoService.listarMetodosDePago();
+
+        // PUNTO 20
+        pagoService.generarArchivoFacturasVencidas();
+
+        // PUNTO 21
+        pagoService.generarArchivoClientesFacturasPagadas();
+
+
+        em.close();
+        emf.close();
     }
 
 

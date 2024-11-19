@@ -444,6 +444,100 @@ public class PagoService {
         }
     }
 
+    // 17GPT - Crea una consulta que liste:
+    //Todas las facturas en estado "Emitida", mostrando su ID, monto total y fecha de emisión.
+
+    public void listarFacturasEmitidas() {
+        System.out.println("PUNTO 17");
+        for (Pago pago : pagos) {
+            if (pago.getFactura().getEstado().equals("Emitida")) {
+                System.out.println("ID Factura: " + pago.getFactura().getID() + " - Monto Total: " + pago.getFactura().getMonto_total() + " - Fecha de Emisión: " + pago.getFactura().getFecha_emision());
+            }
+        }
+    }
+
+    // 18GPT - Genera una consulta que muestre:
+    //Los pagos realizados en los últimos 7 días, incluyendo su fecha, monto y estado.
+
+    public void listarPagosUltimos7Dias() {
+        System.out.println("PUNTO 18");
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -7);
+        Date fechaLimite = calendar.getTime();
+        for (Pago pago : pagos) {
+            if (pago.getFecha_pago().after(fechaLimite)) {
+                System.out.println("Fecha: " + pago.getFecha_pago() + " - Monto: " + pago.getMonto() + " - Estado: " + pago.getEstado());
+            }
+        }
+    }
+
+    // 19 GPT - Listar todos los métodos de pago disponibles, mostrando su nombre y la comisión asociada sin que se repitan.
+
+    public void listarMetodosDePago() {
+        System.out.println("PUNTO 19");
+        Set<MetodoPago> metodosDePago = new HashSet<>();
+        for (Pago pago : pagos) {
+            metodosDePago.add(pago.getMetodoPago());
+        }
+        for (MetodoPago metodoPago : metodosDePago) {
+            System.out.println("Metodo de pago: " + metodoPago.getNombre() + " - Comisión: " + metodoPago.getComision());
+        }
+    }
+
+    // 20 GPT - Generar un archivo facturas_vencidas.csv que contenga:
+    //El ID de la factura, la fecha de vencimiento y el monto total de todas las facturas que estén vencidas y en estado "Emitida".
+
+    public void generarArchivoFacturasVencidas() {
+        System.out.println("PUNTO 20");
+        try {
+            String direccion = "C:\\Mio\\Facultad - UTN\\3er_anio\\Backend_de_Aplicaciones\\3k1_recuperatorio_pagos\\3k1_recuperatorio_pagos\\facturas_vencidas.csv";
+            FileWriter fileWriter = new FileWriter(direccion);
+            PrintWriter printWriter = new PrintWriter(fileWriter);
+            for (Pago pago : pagos) {
+                if (pago.getFactura().getEstado().equals("Emitida") && pago.getFactura().getFecha_vencimiento().before(new Date())) {
+                    printWriter.println("ID Factura: " + pago.getFactura().getID() + " - Fecha de Vencimiento: " + pago.getFactura().getFecha_vencimiento() + " - Monto Total: " + pago.getFactura().getMonto_total());
+                }
+            }
+            printWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 21 GPT - Generar un archivo clientes_facturas_pendientes.csv que incluya:
+    //El nombre del cliente.
+    //El número total de facturas en estado "Pendiente".
+    //El monto total adeudado por cada cliente.
+    //Agrupa los resultados por cliente y ordena por monto adeudado en orden descendente.
+
+    public void generarArchivoClientesFacturasPagadas() {
+        System.out.println("PUNTO 21");
+        Map<Cliente, Map<String, Long>> reporte = new HashMap<>();
+        for (Pago pago : pagos) {
+            Cliente cliente = pago.getCliente();
+            String estadoFactura = pago.getFactura().getEstado();
+            reporte.putIfAbsent(cliente, new HashMap<>());
+            Map<String, Long> estados = reporte.get(cliente);
+            estados.put(estadoFactura, estados.getOrDefault(estadoFactura, 0L) + 1);
+        }
+        try {
+            String direccion = "C:\\Mio\\Facultad - UTN\\3er_anio\\Backend_de_Aplicaciones\\3k1_recuperatorio_pagos\\3k1_recuperatorio_pagos\\clientes_facturas_pagadas.csv";
+            FileWriter fileWriter = new FileWriter(direccion);
+            PrintWriter printWriter = new PrintWriter(fileWriter);
+            for (Map.Entry<Cliente, Map<String, Long>> entry : reporte.entrySet()) {
+                Cliente cliente = entry.getKey();
+                Map<String, Long> estados = entry.getValue();
+                long pendientes = estados.getOrDefault("Pagada", 0L);
+                printWriter.println("Cliente: " + cliente.getNombre() + " - Facturas Pagadas: " + pendientes);
+            }
+            printWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 
     // funcion para guardar en la base de datos
     public void guardarEnBD() {
